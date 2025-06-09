@@ -1,65 +1,54 @@
-# 🧾 Supermarket Billing System
+# 🧾 Supermarket Billing System (C++)
 
-Program ini adalah sistem billing sederhana berbasis **C++** yang digunakan untuk mengelola stok dan transaksi di sebuah supermarket. Program ini berjalan di **Windows** dan menyimpan data menggunakan file teks.
+Program ini adalah aplikasi terminal sederhana untuk sistem kasir supermarket. Aplikasi ini memungkinkan Anda untuk:
 
----
-
-## 📌 Fitur
-
-- Menambahkan item ke dalam stok.
-- Menyimpan data item ke file `Bill.txt`.
-- Melayani proses pembelian dari pelanggan.
-- Menghitung total tagihan.
-- Memperbarui stok setelah pembelian.
-- Tampilan interaktif melalui terminal.
+- Menambahkan stok barang.
+- Melayani pembelian pelanggan.
+- Mencetak total tagihan.
+- Mengelola data stok menggunakan file teks.
 
 ---
 
-## 🏗️ Struktur Program
+## 📦 Fitur
 
-### 1. `class Bill`
-Mewakili satu item barang dengan atribut:
-- `Item`: Nama barang
-- `Rate`: Harga per unit
-- `Quantity`: Jumlah stok
-
-**Metode:**
-- Setter: `setItem()`, `setRate()`, `setQuant()`
-- Getter: `getItem()`, `getRate()`, `getQuant()`
+✅ Tambah data item baru (nama, harga, jumlah)  
+✅ Simpan dan update stok otomatis ke file `Bill.txt`  
+✅ Mencetak struk belanja pelanggan secara langsung di terminal  
+✅ Validasi input untuk mencegah crash saat input tidak valid  
+✅ Tampilan antarmuka teks sederhana berbasis menu
 
 ---
 
-### 2. `addItem(Bill b)`
+## 📁 Struktur File
 
-Digunakan untuk menambahkan item baru ke stok.
+- **`D:/Bill.txt`**  
+  Menyimpan daftar item dan stok barang dalam format:
+  NamaItem : Harga : Jumlah
 
-**Langkah-langkah:**
-- Meminta input dari user: nama, harga, jumlah.
-- Menyimpan data ke file `D:/Bill.txt` dalam format:
+- **`D:/Bill_Temp.txt`**  
+File sementara untuk memperbarui stok setelah transaksi.
+
+Contoh isi file:
+Sabun : 5000 : 20
+Roti : 7000 : 15
 
 
 ---
 
-### 3. `PrintBill(Bill b)`
+## 🚀 Cara Menggunakan
 
-Digunakan untuk mencetak tagihan belanja pelanggan.
+1. Kompilasi program menggunakan compiler C++:
+   ```bash
+   g++ -o billing billing.cpp
+Jalankan program: billing.exe
+Ikuti petunjuk menu:
+1. Add Item      -> Menambahkan barang ke stok
+2. Print Bill    -> Memproses belanja dan mencetak tagihan
+3. Exit          -> Keluar dari aplikasi
+   
+💻 Persyaratan Sistem
+Sistem operasi: Windows (karena menggunakan windows.h, Sleep(), dan system("cls"))
 
-**Langkah-langkah:**
-- User memasukkan nama barang dan jumlah yang ingin dibeli.
-- Program mencari item di file `Bill.txt`.
-- Jika ditemukan dan stok mencukupi:
-- Menghitung total.
-- Menampilkan rincian pembelian.
-- Mengurangi jumlah stok dan memperbarui file.
-- Menyimpan hasil sementara di `Bill_Temp.txt` sebelum mengganti file utama.
+Compiler: GCC (MinGW) atau MSVC yang mendukung C++11 ke atas
 
----
-
-### 4. `main()`
-
-Program utama yang menampilkan menu:
-
-```text
-1. Add Item
-2. Print Bill
-3. Exit
+Folder D:/ harus ada karena program menyimpan file di sana (atau Anda bisa ubah path di kode)
