@@ -1,9 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <windows.h>
 #include <string>
 #include <algorithm>
+#include <windows.h>
+
 using namespace std;
 
 class Bill {
@@ -13,7 +14,7 @@ private:
 public:
     Bill() : Item(""), Rate(0), Quantity(0) {}
 
-    void setItem(string item) {
+    void setItem(const string& item) {
         Item = item;
     }
 
@@ -25,25 +26,34 @@ public:
         Quantity = quant;
     }
 
-    string getItem() {
+    string getItem() const {
         return Item;
     }
 
-    int getRate() {
+    int getRate() const {
         return Rate;
     }
 
-    int getQuant() {
+    int getQuant() const {
         return Quantity;
     }
 };
 
-void addItem(Bill b) {
+// Helper function to trim whitespace
+string trim(const string& str) {
+    size_t first = str.find_first_not_of(" \t\r\n");
+    size_t last = str.find_last_not_of(" \t\r\n");
+    if (first == string::npos || last == string::npos)
+        return "";
+    return str.substr(first, last - first + 1);
+}
+
+void addItem(Bill& b) {
     bool close = false;
     while (!close) {
         int choice;
-        cout << "\t1. Add.\n";
-        cout << "\t2. Close.\n";
+        cout << "\n\t1. Add Item\n";
+        cout << "\t2. Close\n";
         cout << "\tEnter Choice: ";
         cin >> choice;
         cin.ignore();
@@ -55,63 +65,86 @@ void addItem(Bill b) {
 
             cout << "\tEnter Item Name: ";
             getline(cin, item);
-            b.setItem(item);
+            b.setItem(trim(item));
 
             cout << "\tEnter Rate Of Item: ";
-            cin >> rate;
+            while (!(cin >> rate)) {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\tInvalid input. Enter a number: ";
+            }
             b.setRate(rate);
 
             cout << "\tEnter Quantity Of Item: ";
-            cin >> quant;
+            while (!(cin >> quant)) {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\tInvalid input. Enter a number: ";
+            }
             b.setQuant(quant);
+            cin.ignore();
 
             ofstream out("D:/Bill.txt", ios::app);
-            if (!out) {
-                cout << "\tError: File Can't Open!" << endl;
+            if (!out.is_open()) {
+                cerr << "\tError: File Can't Open!" << endl;
             } else {
                 out << b.getItem() << " : " << b.getRate() << " : " << b.getQuant() << endl;
+                out.close();
+                cout << "\tItem Added Successfully\n";
             }
-            out.close();
-            cout << "\tItem Added Successfully" << endl;
-            Sleep(3000);
+            Sleep(2000);
         } else if (choice == 2) {
-            system("cls");
             close = true;
-            cout << "\tBack To Main Menu!" << endl;
-            Sleep(3000);
+            cout << "\tReturning to main menu...\n";
+            Sleep(1500);
+        } else {
+            cout << "\tInvalid choice!\n";
+            Sleep(1500);
         }
     }
 }
 
-void PrintBill(Bill b) {
+void PrintBill(Bill& b) {
     system("cls");
-    int count = 0;
+    int totalAmount = 0;
     bool close = false;
 
     while (!close) {
-        system("cls");
         int choice;
-        cout << "\t1. Add Bill.\n";
-        cout << "\t2. Close Session.\n";
+        cout << "\n\t1. Add Bill Item\n";
+        cout << "\t2. Close Session\n";
         cout << "\tEnter Choice: ";
         cin >> choice;
         cin.ignore();
 
         if (choice == 1) {
-            string item;
-            int quant;
-            cout << "\tEnter Item: ";
-            getline(cin, item);
-            cout << "\tEnter Quantity: ";
-            cin >> quant;
+            string inputItem;
+            int inputQuantity;
 
-            ifstream in("D:/Bill.txt");
-            ofstream out("D:/Bill_Temp.txt");
+            cout << "\tEnter Item Name: ";
+            getline(cin, inputItem);
+            inputItem = trim(inputItem);
+
+            cout << "\tEnter Quantity: ";
+            while (!(cin >> inputQuantity)) {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << "\tInvalid input. Enter a number: ";
+            }
+            cin.ignore();
+
+            ifstream inFile("D:/Bill.txt");
+            ofstream tempFile("D:/Bill_Temp.txt");
+
+            if (!inFile.is_open() || !tempFile.is_open()) {
+                cerr << "\tError opening files.\n";
+                return;
+            }
 
             string line;
             bool found = false;
 
-            while (getline(in, line)) {
+            while (getline(inFile, line)) {
                 stringstream ss(line);
                 string itemName;
                 int itemRate, itemQuant;
@@ -119,86 +152,92 @@ void PrintBill(Bill b) {
                 size_t pos1 = line.find(" : ");
                 size_t pos2 = line.find(" : ", pos1 + 3);
                 if (pos1 != string::npos && pos2 != string::npos) {
-                    itemName = line.substr(0, pos1);
+                    itemName = trim(line.substr(0, pos1));
                     itemRate = stoi(line.substr(pos1 + 3, pos2 - (pos1 + 3)));
                     itemQuant = stoi(line.substr(pos2 + 3));
 
-                    // Trim whitespace
-                    itemName.erase(remove(itemName.begin(), itemName.end(), '\t'), itemName.end());
-                    itemName.erase(itemName.find_last_not_of(" ") + 1);
-
-                    if (item == itemName) {
+                    if (itemName == inputItem) {
                         found = true;
-                        if (quant <= itemQuant) {
-                            int amount = itemRate * quant;
+                        if (inputQuantity <= itemQuant) {
+                            int amount = itemRate * inputQuantity;
                             cout << "\n\tItem\tRate\tQuantity\tAmount\n";
-                            cout << "\t" << itemName << "\t" << itemRate << "\t" << quant << "\t\t" << amount << endl;
-                            int newQuant = itemQuant - quant;
-                            count += amount;
+                            cout << "\t" << itemName << "\t" << itemRate << "\t" << inputQuantity << "\t\t" << amount << endl;
+                            totalAmount += amount;
 
+                            int newQuant = itemQuant - inputQuantity;
                             if (newQuant > 0)
-                                out << itemName << " : " << itemRate << " : " << newQuant << endl;
+                                tempFile << itemName << " : " << itemRate << " : " << newQuant << endl;
                         } else {
-                            cout << "\tSorry, not enough quantity in stock!" << endl;
-                            out << line << endl;
+                            cout << "\tInsufficient stock!\n";
+                            tempFile << line << endl;
                         }
                     } else {
-                        out << line << endl;
+                        tempFile << line << endl;
                     }
                 }
             }
 
             if (!found) {
-                cout << "\tItem Not Available!" << endl;
+                cout << "\tItem Not Found!\n";
             }
 
-            in.close();
-            out.close();
+            inFile.close();
+            tempFile.close();
+
             remove("D:/Bill.txt");
             rename("D:/Bill_Temp.txt", "D:/Bill.txt");
+
             Sleep(3000);
         } else if (choice == 2) {
             close = true;
-            cout << "\tCounting Total Bill..." << endl;
+            cout << "\n\tCalculating total bill...\n";
             Sleep(2000);
+        } else {
+            cout << "\tInvalid Choice!\n";
+            Sleep(1500);
         }
     }
 
     system("cls");
-    cout << "\n\n\tTotal Bill ----------------- : " << count << endl << endl;
-    cout << "\tThanks For Shopping!" << endl;
+    cout << "\n\tTotal Bill ----------------- : " << totalAmount << "\n";
+    cout << "\tThank You for Shopping!\n\n";
     Sleep(4000);
 }
 
 int main() {
     Bill b;
     bool exit = false;
+
     while (!exit) {
         system("cls");
-        int val;
+        int choice;
 
-        cout << "\tWelcome To Super Market Billing System\n";
-        cout << "\t***************************************\n";
+        cout << "\tWelcome to Supermarket Billing System\n";
+        cout << "\t======================================\n";
         cout << "\t1. Add Item\n";
         cout << "\t2. Print Bill\n";
         cout << "\t3. Exit\n";
         cout << "\tEnter Choice: ";
-        cin >> val;
+        cin >> choice;
         cin.ignore();
 
-        if (val == 1) {
+        switch (choice) {
+        case 1:
             addItem(b);
-        } else if (val == 2) {
+            break;
+        case 2:
             PrintBill(b);
-        } else if (val == 3) {
-            system("cls");
+            break;
+        case 3:
             exit = true;
-            cout << "\tGood Luck!" << endl;
-            Sleep(3000);
-        } else {
-            cout << "\tInvalid Choice!" << endl;
+            cout << "\n\tExiting... Thank you!\n";
             Sleep(2000);
+            break;
+        default:
+            cout << "\tInvalid Choice! Please try again.\n";
+            Sleep(1500);
         }
     }
+
     return 0;
 }
