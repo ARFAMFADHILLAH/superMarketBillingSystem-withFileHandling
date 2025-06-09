@@ -40,7 +40,11 @@ Roti : 7000 : 15
 1. Kompilasi program menggunakan compiler C++:
    ```bash
    g++ -o billing billing.cpp
-Jalankan program: billing.exe
+   
+Jalankan program:
+
+billing.exe
+
 Ikuti petunjuk menu:
 1. Add Item      -> Menambahkan barang ke stok
 2. Print Bill    -> Memproses belanja dan mencetak tagihan
