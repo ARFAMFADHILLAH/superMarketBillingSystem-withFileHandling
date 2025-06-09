@@ -1,5 +1,3 @@
-.
-
 🔧 Struktur Utama Program
 1. Class Bill
 Digunakan untuk merepresentasikan satu item. Memiliki:
