@@ -1,79 +1,65 @@
-🔧 Struktur Utama Program
-1. Class Bill
-Digunakan untuk merepresentasikan satu item. Memiliki:
+# 🧾 Supermarket Billing System
 
-Private Members:
+Program ini adalah sistem billing sederhana berbasis **C++** yang digunakan untuk mengelola stok dan transaksi di sebuah supermarket. Program ini berjalan di **Windows** dan menyimpan data menggunakan file teks.
 
-Item (nama barang)
+---
 
-Rate (harga satuan)
+## 📌 Fitur
 
-Quantity (jumlah stok)
+- Menambahkan item ke dalam stok.
+- Menyimpan data item ke file `Bill.txt`.
+- Melayani proses pembelian dari pelanggan.
+- Menghitung total tagihan.
+- Memperbarui stok setelah pembelian.
+- Tampilan interaktif melalui terminal.
 
-Public Methods:
+---
 
-Setters: setItem(), setRate(), setQuant()
+## 🏗️ Struktur Program
 
-Getters: getItem(), getRate(), getQuant()
+### 1. `class Bill`
+Mewakili satu item barang dengan atribut:
+- `Item`: Nama barang
+- `Rate`: Harga per unit
+- `Quantity`: Jumlah stok
 
-2. Fungsi addItem(Bill b)
-Digunakan untuk menambah item ke dalam stok dan menyimpannya ke file.
+**Metode:**
+- Setter: `setItem()`, `setRate()`, `setQuant()`
+- Getter: `getItem()`, `getRate()`, `getQuant()`
 
-Alur:
-Menampilkan pilihan: 1 (Add), 2 (Close).
+---
 
-Jika Add dipilih:
+### 2. `addItem(Bill b)`
 
-Minta input nama, harga, dan jumlah.
+Digunakan untuk menambahkan item baru ke stok.
 
-Simpan ke file D:/Bill.txt dengan format:
+**Langkah-langkah:**
+- Meminta input dari user: nama, harga, jumlah.
+- Menyimpan data ke file `D:/Bill.txt` dalam format:
 
-yaml
-Copy
-Edit
-NamaItem : Harga : Jumlah
-Jika Close dipilih:
 
-Keluar dari loop dan kembali ke menu utama.
+---
 
-3. Fungsi PrintBill(Bill b)
-Digunakan untuk memproses pembelian dan mencetak tagihan.
+### 3. `PrintBill(Bill b)`
 
-Alur:
-Menampilkan pilihan: 1 (Add Bill), 2 (Close Session).
+Digunakan untuk mencetak tagihan belanja pelanggan.
 
-Jika Add Bill dipilih:
+**Langkah-langkah:**
+- User memasukkan nama barang dan jumlah yang ingin dibeli.
+- Program mencari item di file `Bill.txt`.
+- Jika ditemukan dan stok mencukupi:
+- Menghitung total.
+- Menampilkan rincian pembelian.
+- Mengurangi jumlah stok dan memperbarui file.
+- Menyimpan hasil sementara di `Bill_Temp.txt` sebelum mengganti file utama.
 
-Masukkan nama item dan jumlah yang ingin dibeli.
+---
 
-Buka D:/Bill.txt, cari item tersebut.
+### 4. `main()`
 
-Jika ditemukan:
+Program utama yang menampilkan menu:
 
-Cek apakah stok cukup.
-
-Hitung total harga.
-
-Tampilkan rincian item.
-
-Kurangi stok, simpan ke file temporary Bill_Temp.txt.
-
-Ganti file lama dengan yang baru.
-
-Jika Close Session dipilih:
-
-Menampilkan total tagihan semua item.
-
-4. main()
-Adalah entry point program:
-
-Menampilkan menu utama:
-
-markdown
-Copy
-Edit
+```text
 1. Add Item
 2. Print Bill
 3. Exit
-Pilihan akan memanggil addItem(), PrintBill(), atau keluar.
-
